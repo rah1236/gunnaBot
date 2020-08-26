@@ -11,22 +11,24 @@ from discord.ext import commands
 TOKEN = tokens.token_secret
 bot = discord.Client()
 
-bot = commands.Bot(command_prefix='$')
+bot = commands.Bot(command_prefix='gunna ')
 
 
 
 
-@bot.command(name='gunnafy', help='Gunnafies any attached picture, JPEGS only tho. Idk why tbh.')
+@bot.command(name='gunnafy', help='Gunnafies any attached picture (Now supports all image types!)')
 async def gunnafier(ctx):
     url = str(ctx.message.attachments[0])
     url = str(url).split("'")[3]
     print(url)
     response = requests.get(url)
     submitted = Image.open(BytesIO(response.content))
-    submitted2 = submitted.resize((467,350))
+    if not submitted.mode == 'RGB':
+        submitted = submitted.convert('RGB')
+    submitted = submitted.resize((467,350))
     gunna = Image.open('gunna.png')
     gunna = gunna.resize((467,350))
-    Image.blend(submitted2, gunna, .5).save('out.png')
+    Image.blend(submitted, gunna, .5).save('out.png')
     await ctx.send(file=discord.File('out.png'))
 
 @bot.command(name='wisdom', help='Generates wisdom directly from Gunnas Lyrics.')
