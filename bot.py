@@ -1,45 +1,46 @@
 # bot.py
 import os
+import markovify
 import tokens
 import random
 from PIL import Image
 import requests
 from io import BytesIO
-
 import discord
 from discord.ext import commands
-
-
-
 TOKEN = tokens.token_secret
-
 bot = discord.Client()
 
+bot = commands.Bot(command_prefix='gunna ')
 
 
-bot = commands.Bot(command_prefix='!')
+
 
 @bot.command(name='gunnafy', help='Gunnafies any attached picture, JPEGS only tho. Idk why tbh.')
 async def gunnafier(ctx):
     url = str(ctx.message.attachments[0])
     url = str(url).split("'")[3]
     print(url)
-
     response = requests.get(url)
-    
-
     submitted = Image.open(BytesIO(response.content))
-    
-    
     submitted2 = submitted.resize((467,350))
-    
     gunna = Image.open('gunna.png')
-
     gunna = gunna.resize((467,350))
-    
     Image.blend(submitted2, gunna, .5).save('out.png')
-    
-    #response = "gunnafied"
     await ctx.send(file=discord.File('out.png'))
+
+@bot.command(name='wisdom', help='Generates wisdom directly from Gunnas Lyrics.')
+async def lyricgen(ctx):
+    
+    with open("gunnaLyrics.txt", encoding='utf-8') as f:
+        text = f.read()
+
+# Build the model.
+    text_model = markovify.Text(text, reject_reg = r"@")
+    text_model.well_formed = True
+
+    wisdom = text_model.make_short_sentence(200)
+    print(wisdom)
+    await ctx.send(str(wisdom))
 
 bot.run(TOKEN)
