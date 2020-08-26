@@ -11,7 +11,7 @@ from discord.ext import commands
 TOKEN = tokens.token_secret
 bot = discord.Client()
 
-bot = commands.Bot(command_prefix='gunna ')
+bot = commands.Bot(command_prefix='$')
 
 
 
@@ -36,11 +36,14 @@ async def lyricgen(ctx):
         text = f.read()
 
 # Build the model.
-    text_model = markovify.Text(text, reject_reg = r"@")
-    text_model.well_formed = True
+    def generateLyric():
+        text_model = markovify.Text(text, reject_reg = r"@")
+        text_model.well_formed = True
 
-    wisdom = text_model.make_short_sentence(200)
-    print(wisdom)
-    await ctx.send(str(wisdom))
+        return text_model.make_short_sentence(200, tries=500)
+
+    lyric = generateLyric()
+    print(lyric)
+    await ctx.send(str(lyric))
 
 bot.run(TOKEN)
