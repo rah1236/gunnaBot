@@ -8,6 +8,7 @@ import requests
 from io import BytesIO
 import discord
 from discord.ext import commands
+import linecache
 TOKEN = tokens.token_secret
 bot = discord.Client()
 
@@ -47,5 +48,14 @@ async def lyricgen(ctx):
     lyric = generateLyric()
     print(lyric)
     await ctx.send(str(lyric))
+
+@bot.command(name='song', help='Gives you a Gunna song to listen to.')
+async def chooseSong(ctx):
+
+    randint = random.randint(0, 128)
+    song = linecache.getline("songs.txt", randint)
+    print(song)
+    await ctx.send(str(song))
+
 
 bot.run(TOKEN)
