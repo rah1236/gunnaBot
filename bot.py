@@ -40,9 +40,9 @@ async def lyricgen(ctx):
 # Build the model.
     def generateLyric():
         text_model = markovify.Text(text, reject_reg = r"@")
-        text_model.well_formed = True
+        text_model.well_formed = False
 
-        return text_model.make_short_sentence(200, tries=500)
+        return text_model.make_short_sentence(200, tries=500, max_overlap_ratio = 0.3)
 
     lyric = generateLyric()
     print(lyric)
